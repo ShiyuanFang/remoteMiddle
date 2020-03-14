@@ -1,4 +1,3 @@
-Git is a distributed version control system.
-Git is a free software distributed under the GPL.
-I really hate SE.
-Git can track your trace.
+This is a testing repo.
+Just for a homework.
+The operations include:add,commit,push,remove.
