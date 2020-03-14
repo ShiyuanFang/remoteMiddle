@@ -1,0 +1,105 @@
+#include <iostream>
+
+using namespace std;
+
+int quotient(const int a,const int b);
+void generalEuclid(const int a,const int b,const int c,int &quo,int &remainder);
+int abs(const int x);
+int greatestCommonFactor(const int a1,const int b1);
+void linearCombination(const int a1,const int b1);
+int main()
+{
+    linearCombination(6,12);
+    return 0;
+}
+
+int greatestCommonFactor(const int a1,const int b1){
+    int a=abs(a1);
+    int b=abs(b1);
+    if(a==0)return b;
+    if(b==0)return a;
+    if(a<b){
+        int  tmp=a;
+        a=b;
+        b=tmp;
+    }
+    int quo;
+    int remain;
+    generalEuclid(a,b,-b/2,quo,remain);
+    return greatestCommonFactor(b,remain);
+}
+
+int abs(const int x){
+    if(x<0)return -x;
+    else return x;
+}
+
+void generalEuclid(const int a,const int b,const int c,int &quo,int &remainder){
+    quo=quotient(a-c,b);
+    remainder=a-quo*b;
+}
+
+int quotient(const int a,const int b){
+    if(a<0){
+        int c=a/b;
+        if(b*c==a)return c;
+        else return c-1;
+    }
+    else return a/b;
+}
+
+void deduceCoeffientArray(int* const qs,int* const rs,int &qpos,int &rpos,const int a1,const int b1){
+    const int a=abs(a1);
+    const int b=abs(b1);
+    int quo,remain;
+    generalEuclid(a,b,0,quo,remain);
+    qs[qpos]=quo;
+    rs[rpos]=remain;
+    ++qpos;++rpos;
+    if(remain==0)return;
+    deduceCoeffientArray(qs,rs,qpos,rpos,b,remain);
+}
+
+void linearCombination(const int a1,const int b1){
+    int* qs=new int[100];
+    int* rs=new int[100];
+    int qpos=0,rpos=0;
+    const int a=abs(a1);
+    const int b=abs(b1);
+    deduceCoeffientArray(qs,rs,qpos,rpos,a,b);
+    /*for(int i=0;i<=qpos-1;++i)cout<<qs[i]<<' ';
+    cout<<endl;
+    for(int i=0;i<=rpos-1;++i)cout<<rs[i]<<' ';*/
+    const int factor=rs[rpos-2];
+    cout<<factor<<endl;
+    const int magnitude=qpos;
+    int* bs=new int[magnitude+2];
+    int* as=new int[magnitude+2];
+    bs[0]=0;as[0]=1;
+    bs[1]=1;as[1]=0;
+    for(int i=2;i<=magnitude+1;++i){
+        bs[i]=bs[i-2]-qs[i-2]*bs[i-1];
+        as[i]=as[i-2]-qs[i-2]*as[i-1];
+    }
+    int m=as[magnitude];
+    int n=bs[magnitude];
+    if(m*a1-n*b1==factor)n=-n;
+    if(-m*a1+n*b1==factor)m=-m;
+    if(-m*a1-n*b1==factor){m=-m;n=-n;}
+    cout<<m<<'\t'<<n;
+    /*if(magnitude==2){
+        bs[1]=1-bs[0]*qs[1];as[1]=-qs[1]*as[0];
+    }
+    if(magnitude>=3){
+        bs[1]=1-bs[0]*qs[1];as[1]=-qs[1]*as[0];
+        for(int i=2;i<=magnitude-2;++i){
+            bs[i]=bs[i-2]-qs[i]*bs[i-1];
+            as[i]=as[i-2]-qs[i]*as[i-1];
+        }
+    }
+    cout<<as[magnitude-2]<<'\t'<<bs[magnitude-2]<<endl;*/
+    delete []as;
+    delete []bs;
+    delete []qs;
+    delete []rs;
+}
